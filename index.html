@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    label { display: block; margin: 10px 0 5px; }
+    textarea { width: 100%; height: 80px; margin-bottom: 10px; }
+    button { background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Formulario de Llamada</h1>
+  <form id="formulario">
+    <label>
+      <input type="checkbox" id="contesto" name="contesto">
+      ¿Contestó?
+    </label>
+    <label for="resultado">Resultado de la llamada:</label>
+    <textarea id="resultado" name="resultado"></textarea>
+    <button type="button" onclick="enviarFormulario()">Enviar</button>
+  </form>
+  <script>
+    function enviarFormulario() {
+      const contesto = document.getElementById('contesto').checked;
+      const resultado = document.getElementById('resultado').value;
+
+      // Enviar los datos a Telegram Web Apps
+      Telegram.WebApp.sendData(JSON.stringify({ contesto, resultado }));
+    }
+  </script>
+</body>
+</html>
