@@ -6,6 +6,7 @@
     <title>Formulario con Telegram Web App</title>
     <!-- Agregar Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 </head>
 <body class="bg-gray-100 p-6">
 
@@ -41,6 +42,7 @@
             const telegram = window.Telegram.WebApp;
             if (telegram) {                
                 telegram.sendData({
+                    webAppId: 'form_llamada',
                     contestada,
                     resultado
                 });
