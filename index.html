@@ -41,11 +41,11 @@
             // Obtener el Bot API Token y el chat_id del Telegram Web App
             const telegram = window.Telegram.WebApp;
             if (telegram) {                
-                telegram.sendData({
+                telegram.sendData(JSON.stringify({
                     webAppId: 'form_llamada',
                     contestada,
                     resultado
-                });
+                }));
                 telegram.close();
             } else {
                 console.error("Telegram WebApp no está cargado");
