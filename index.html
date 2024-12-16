@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,43 +8,74 @@
     <!-- Agregar Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons"></script>
 </head>
+
 <body class="bg-gray-100 p-6">
 
     <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-xl">
-        <h4 class="text-2xl font-semibold text-center mb-6 text-gray-800">Formulario de Llamada</h4>
+        <h2 id="nombres" class="text-4xl font-semibold text-center mb-4 text-gray-800"></h2>
+        
+        <div class="flex justify-center mb-4">
+            <a id="llamar" href="" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600">
+                <!-- Ícono de teléfono de Feather -->
+                <i data-feather="phone" class="mr-2"></i>
+                Llamar
+              </a>
+        </div>
+
+
 
         <div class="mb-6">
             <label class="flex items-center space-x-3">
-                <input type="checkbox" id="contestada" class="checkbox w-6 h-6 text-blue-500 rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500" />
+                <input type="checkbox" id="contestada"
+                    class="checkbox w-6 h-6 text-blue-500 rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500" />
                 <span class="text-lg text-gray-700">¿Llamada contestada?</span>
             </label>
         </div>
 
         <div class="mb-6">
-            <textarea id="resultado" class="w-full h-32 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" placeholder="Especifica el resultado de la llamada..."></textarea>
+            <textarea id="resultado"
+                class="w-full h-32 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                placeholder="Especifica el resultado de la llamada..."></textarea>
         </div>
 
         <!-- Botón de enviar -->
         <div class="flex justify-center">
-            <button id="botonEnviar" class="w-full bg-green-500 text-white py-3 rounded-md text-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+            <button id="botonEnviar"
+                class="w-full bg-green-500 text-white py-3 rounded-md text-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
                 Registrar llamada
             </button>
         </div>
     </div>
 
     <script>
+        // Obtener los parámetros de la URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        let prospecto = getQueryParam('p');
+        if (prospecto) {
+            prospecto = JSON.parse(decodeURIComponent(prospecto));
+            console.log(prospecto)
+            document.getElementById("nombres").innerHTML = prospecto.nombres;
+            document.getElementById('llamar').href = `tel:${prospecto.celular}`;
+        }
+
         // Esta función enviará los datos al Telegram Web App
-        document.getElementById("botonEnviar").addEventListener("click", function() {
+        document.getElementById("botonEnviar").addEventListener("click", function () {
             const contestada = document.getElementById("contestada").checked;
             const resultado = document.getElementById("resultado").value;
 
             // Obtener el Bot API Token y el chat_id del Telegram Web App
             const telegram = window.Telegram.WebApp;
-            if (telegram) {                
+            if (telegram) {
                 telegram.sendData(JSON.stringify({
                     webAppId: 'form_llamada',
                     contestada,
+                    prospectoId: prospecto?.id,
                     resultado
                 }));
                 telegram.close();
@@ -53,5 +85,10 @@
         });
     </script>
 
+
+    <script>
+        feather.replace();  // Reemplaza los íconos con los gráficos SVG
+    </script>
 </body>
+
 </html>
