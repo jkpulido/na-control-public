@@ -121,7 +121,7 @@
         if (prospecto) {
             prospecto = JSON.parse(decodeURIComponent(prospecto));
             console.log(prospecto)
-            document.getElementById("nombres").innerHTML = prospecto.nombres || prospecto.id + ': ' + prospecto.celular;
+            document.getElementById("nombres").innerHTML = prospecto.nombres.trim() || prospecto.id + ': ' + prospecto.celular;
             document.getElementById('llamar').href = `tel:${prospecto.celular}`;
             document.getElementById("creacion").innerHTML = `Creado el: ${prospecto.created_at.split('T')[0]}`;
 
