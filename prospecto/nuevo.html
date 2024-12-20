@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Prospecto</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+</head>
+
+<body class="bg-gray-100 py-10 px-5">
+  <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Registro de Prospecto</h1>
+    <form id="registroProspecto" class="space-y-4">
+      <!-- Nombres -->
+      <div>
+        <label for="nombres" class="text-lg text-gray-700">Nombres y Apellidos <span class="text-red-500 ml-1">*</span></label>
+        <input type="text" id="nombres" name="nombres"
+          class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <p class="text-red-500 text-sm hidden" id="errorNombres">Los nombres son obligatorios.</p>
+      </div>
+
+      <!-- Edad -->
+      <div>
+        <label for="edad" class="text-lg text-gray-700">Edad <span class="text-red-500 ml-1">*</span></label>
+        <input type="number" id="edad" name="edad" min="1" max="120"
+          class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <p class="text-red-500 text-sm hidden" id="errorEdad">La edad es un dato obligatorio. Si no conoce la edad
+          exacta, ingrese una aproximada.</p>
+      </div>
+
+      <!-- Celular -->
+      <div>
+        <label for="celular" class="text-lg text-gray-700">Celular <span class="text-red-500 ml-1">*</span></label>
+        <input type="text" id="celular" name="celular" pattern="^\d{9}$"
+          title="Debe contener exactamente 9 números, sin espacios ni caracteres especiales."
+          class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <p class="text-red-500 text-sm hidden" id="errorCelular">El celular es obligatorio y debe tener 9 dígitos.</p>
+      </div>
+
+      <!-- Temperatura -->
+      <div>
+        <label class="text-lg text-gray-700">Temperatura <span class="text-red-500 ml-1">*</span></label>
+        <div class="flex items-center space-x-6 mt-2">
+          <label for="frio" class="flex items-center space-x-2">
+            <input class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
+              type="radio" id="frio" name="temperatura" value="FRIO">
+            <span class="text-gray-700">Frío</span>
+          </label>
+
+          <label for="tibio" class="flex items-center space-x-2">
+            <input class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
+              type="radio" id="tibio" name="temperatura" value="TIBIO">
+            <span class="text-gray-700">Tibio</span>
+          </label>
+
+          <label for="caliente" class="flex items-center space-x-2">
+            <input class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
+              type="radio" id="caliente" name="temperatura" value="CALIENTE">
+            <span class="text-gray-700">Caliente</span>
+          </label>
+        </div>
+        <p class="text-red-500 text-sm hidden" id="errorTemperatura">Debe seleccionar una temperatura.</p>
+      </div>
+
+      <!-- Medio de Propaganda -->
+      <div>
+        <label for="medioPropaganda" class="text-lg text-gray-700">Medio de Propaganda <span
+            class="text-red-500 ml-1">*</span></label>
+        <select id="medioPropaganda" name="medio_id"
+          class="mt-2 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">Seleccione una opción</option>
+          <option value="1">Volantes</option>
+          <option value="2">Facebook</option>
+          <option value="16">Facebook Campaña Nacional</option>
+          <option value="3">Contacto Personal Interno</option>
+          <option value="4">Contacto Personal Externo</option>
+          <option value="5">Cartel de Puerta</option>
+          <option value="6">Llamada Telefónica</option>
+          <option value="7">Página Web / Formulario Nacional</option>
+          <option value="8">Atención en la Sede</option>
+          <option value="9">Instagram</option>
+          <option value="10">WhatsApp</option>
+          <option value="15">WhatsApp Campaña Nacional</option>
+          <option value="11">Voluntariado</option>
+          <option value="12">Curso Oratoria</option>
+          <option value="13">Base de Datos Antigua</option>
+          <option value="14">Formulario de la Filial</option>
+          <!-- Más opciones -->
+        </select>
+        <p class="text-red-500 text-sm hidden" id="errorMedioPropaganda">Debe seleccionar un medio de propaganda.</p>
+      </div>
+
+      <!-- Botón Enviar -->
+      <div>
+        <button type="submit"
+          class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Registrar Prospecto
+        </button>
+      </div>
+    </form>
+
+    <p class="mt-4 text-sm text-gray-500">
+      <span class="text-red-500">*</span> Campos obligatorios
+    </p>
+  </div>
+
+  <script>
+    document.getElementById('registroProspecto').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      // Validar campos
+      let valid = true;
+
+      // Nombres
+      const nombres = document.getElementById('nombres');
+      const errorNombres = document.getElementById('errorNombres');
+      if (nombres.value.trim() === '') {
+        valid = false;
+        errorNombres.classList.remove('hidden');
+      } else {
+        errorNombres.classList.add('hidden');
+      }
+
+      // Edad
+      const edad = document.getElementById('edad');
+      const errorEdad = document.getElementById('errorEdad');
+      if (edad.value.trim() === '') {
+        valid = false;
+        errorEdad.classList.remove('hidden');
+      } else {
+        errorEdad.classList.add('hidden');
+      }
+
+      // Celular
+      const celular = document.getElementById('celular');
+      const errorCelular = document.getElementById('errorCelular');
+      if (celular.value.trim() === '' || !celular.checkValidity()) {
+        valid = false;
+        errorCelular.classList.remove('hidden');
+      } else {
+        errorCelular.classList.add('hidden');
+      }
+
+      // Temperatura
+      const temperatura = document.querySelector('input[name="temperatura"]:checked');
+      const errorTemperatura = document.getElementById('errorTemperatura');
+      if (!temperatura) {
+        valid = false;
+        errorTemperatura.classList.remove('hidden');
+      } else {
+        errorTemperatura.classList.add('hidden');
+      }
+
+      // Medio de Propaganda
+      const medioPropaganda = document.getElementById('medioPropaganda');
+      const errorMedioPropaganda = document.getElementById('errorMedioPropaganda');
+      if (medioPropaganda.value === '') {
+        valid = false;
+        errorMedioPropaganda.classList.remove('hidden');
+      } else {
+        errorMedioPropaganda.classList.add('hidden');
+      }
+
+      if (valid) {
+        const formData = new FormData(event.target);
+        const prospecto = Object.fromEntries(formData.entries());
+
+        const telegram = window.Telegram.WebApp;
+        if (telegram) {
+          telegram.sendData(JSON.stringify(prospecto));
+          telegram.close();
+        } else {
+          console.error("Telegram WebApp no está cargado");
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
