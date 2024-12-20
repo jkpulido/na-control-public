@@ -15,7 +15,8 @@
     <form id="registroProspecto" class="space-y-4">
       <!-- Nombres -->
       <div>
-        <label for="nombres" class="text-lg text-gray-700">Nombres y Apellidos <span class="text-red-500 ml-1">*</span></label>
+        <label for="nombres" class="text-lg text-gray-700">Nombres y Apellidos <span
+            class="text-red-500 ml-1">*</span></label>
         <input type="text" id="nombres" name="nombres"
           class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         <p class="text-red-500 text-sm hidden" id="errorNombres">Los nombres son obligatorios.</p>
@@ -33,10 +34,19 @@
       <!-- Celular -->
       <div>
         <label for="celular" class="text-lg text-gray-700">Celular <span class="text-red-500 ml-1">*</span></label>
-        <input type="text" id="celular" name="celular" pattern="^\d{9}$"
+        <input type="number" id="celular" name="celular" pattern="^\d{9}$"
           title="Debe contener exactamente 9 números, sin espacios ni caracteres especiales."
           class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         <p class="text-red-500 text-sm hidden" id="errorCelular">El celular es obligatorio y debe tener 9 dígitos.</p>
+      </div>
+
+      <!-- Correo -->
+      <div>
+        <label for="correo" class="text-lg text-gray-700">Correo Electrónico</label>
+        <input type="email" id="correo" name="correo"
+          class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          placeholder="correo@ejemplo.com">
+        <p class="text-red-500 text-sm hidden" id="errorCorreo">Debe ingresar un correo válido.</p>
       </div>
 
       <!-- Temperatura -->
@@ -92,10 +102,18 @@
         <p class="text-red-500 text-sm hidden" id="errorMedioPropaganda">Debe seleccionar un medio de propaganda.</p>
       </div>
 
+      <!-- Detalle del Medio de Propaganda -->
+      <div>
+        <label for="medioDetalle" class="text-lg text-gray-700">Detalle del Medio de Propaganda</label>
+        <textarea id="medioDetalle" name="medio_detalle" rows="2"
+          class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          placeholder="Ingrese un detalle adicional del medio de propaganda..."></textarea>
+      </div>
+
       <!-- Botón Enviar -->
       <div>
         <button type="submit"
-          class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          class="w-full bg-green-500 text-white py-3 rounded-md text-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
           Registrar Prospecto
         </button>
       </div>
@@ -165,7 +183,8 @@
 
       if (valid) {
         const formData = new FormData(event.target);
-        const prospecto = Object.fromEntries(formData.entries());
+        const filteredEntries = Array.from(formData.entries()).filter(([key, value]) => value.trim() !== '');
+        const prospecto = Object.fromEntries(filteredEntries);
 
         const telegram = window.Telegram.WebApp;
         if (telegram) {
