@@ -169,7 +169,10 @@
 
         const telegram = window.Telegram.WebApp;
         if (telegram) {
-          telegram.sendData(JSON.stringify(prospecto));
+          telegram.sendData(JSON.stringify({
+            webAppId: 'form_prospecto_nuevo',
+            ...prospecto
+          }));
           telegram.close();
         } else {
           console.error("Telegram WebApp no está cargado");
