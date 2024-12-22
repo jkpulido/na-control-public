@@ -39,8 +39,7 @@
 
             <div class="relative group">
                 <!-- Medios -->
-                <div id="medio"
-                data-tooltip-target="medio-tooltip"
+                <div id="medio" data-tooltip-target="medio-tooltip"
                     class="flex items-center space-x-1 bg-green-100 text-green-800 py-1 px-2 rounded-full text-xs cursor-pointer">
                     <span></span>
                     <div class="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -83,12 +82,12 @@
             <div class="flex items-center space-x-6 mt-2">
                 <label class="flex items-center space-x-2">
                     <input type="radio" id="si" name="contestada" value="si"
-                           class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full" />
+                        class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full" />
                     <span class="text-gray-700">Sí</span>
                 </label>
                 <label class="flex items-center space-x-2">
                     <input type="radio" id="no" name="contestada" value="no"
-                           class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full" />
+                        class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full" />
                     <span class="text-gray-700">No</span>
                 </label>
             </div>
@@ -107,6 +106,23 @@
                 class="w-full bg-green-500 text-white py-3 rounded-md text-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
                 Registrar llamada
             </button>
+        </div>
+
+        <!-- Historial de llamadas -->
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">Historial de Llamadas</h1>
+        <div class="overflow-x-auto">
+            <table class="text-sm min-w-full table-auto border-collapse border border-gray-300">
+                <thead class="bg-green-50">
+                    <tr>
+                        <th class="border border-gray-300 px-4 py-2 text-left text-gray-600">Fecha</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left text-gray-600">Voluntario</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left text-gray-600">Resultado</th>
+                    </tr>
+                </thead>
+                <tbody id="historial-body">
+
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -162,6 +178,30 @@
                             document.getElementById("etiqueta-" + pe.id + "-tooltip").classList.toggle("opacity-0");
                         });
                     }
+                });
+            }
+            if (prospecto.llamadas.length) {
+                const tbody = document.getElementById("historial-body");
+                console.log(prospecto)
+                prospecto.llamadas.forEach(llamada => {
+                    let date = new Date(llamada.created_at).toLocaleString("es-PE", {
+                        timeZone: "America/Lima",
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric"
+                    });
+                    let [day, month, year] = date.split(" ")[0].split("/");
+
+                    const fila = document.createElement("tr");
+                    fila.className = "odd:bg-white even:bg-gray-50";
+
+                    fila.innerHTML = `
+                        <td class="border border-gray-300 px-4 py-2 text-gray-700">${day}-${month}-${year}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-700">${llamada.usuarios.nombres}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-gray-700">${llamada.resultado}</td>
+                    `;
+
+                    tbody.appendChild(fila);
                 });
             }
         }
