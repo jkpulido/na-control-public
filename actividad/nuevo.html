@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Actividad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+</head>
+
+<body class="bg-gray-100 py-10 px-5">
+    <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Registro de Actividad</h1>
+        <form id="registroActividad" class="space-y-4">
+
+            <!-- campaña -->
+            <div>
+                <label for="campania" class="text-lg text-gray-700">Campaña<span
+                        class="text-red-500 ml-1">*</span></label>
+                <select id="campania" name="campania"
+                    class="mt-2 block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Seleccione una opción</option>
+                    <option value="202501">Enero 2025</option>
+                    <option value="202502">Febrero 2025</option>
+                    <option value="202503">Marzo 2025</option>
+                    <option value="202504">Abril 2025</option>
+                    <option value="202505">Mayo 2025</option>
+                    <option value="202506">Junio 2025</option>
+                    <option value="202507">Julio 2025</option>
+                    <option value="202508">Agosto 2025</option>
+                    <option value="202509">Septiembre 2025</option>
+                    <option value="202510">Octubre 2025</option>
+                    <option value="202511">Noviembre 2025</option>
+                    <option value="202512">Diciembre 2025</option>
+                    <!-- Más opciones -->
+                </select>
+                <p class="text-red-500 text-sm hidden" id="errorCampania">Debe seleccionar una campaña.</p>
+            </div>
+
+
+            <!-- nombre -->
+            <div>
+                <label for="nombre" class="text-lg text-gray-700">Nombre <span
+                        class="text-red-500 ml-1">*</span></label>
+                <input type="number" id="nombre" name="nombre" min="1" max="120"
+                    class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <p class="text-red-500 text-sm hidden" id="errorNombre">El nombre de la actividad es un dato
+                    obligatorio.</p>
+            </div>
+
+            <!-- Campo imagen -->
+            <div>
+                <label for="imagen" class="text-lg text-gray-700">Imagen de la actividad (Máx. 1MB)</label>
+                <input type="file" id="imagen" name="imagen"
+                    class="mt-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
+                    accept="image/*">
+                <p class="text-red-500 text-sm hidden" id="errorImagen">La imagen seleccionada supera el límite de 1MB.
+                </p>
+                <div class="mt-2">
+                    <img id="previewImagen" class="hidden w-20 h-20 object-cover border rounded-md" alt="Vista previa">
+                </div>
+            </div>
+
+            <!-- descripción -->
+            <div>
+                <label for="descripcion" class="text-lg text-gray-700">Descripción</label>
+                <textarea id="descripcion" name="descripcion" rows="2"
+                    class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Ingrese una descripción de la actividad"></textarea>
+            </div>
+
+            <!-- fecha -->
+            <div>
+                <label for="fecha" class="text-lg text-gray-700">Fecha y hora de la actividad<span
+                        class="text-red-500 ml-1">*</span></label>
+                <div class="mt-2 flex space-x-4">
+                    <div class="w-1/2">
+                        <input type="date" id="fecha" name="fecha"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <p class="text-red-500 text-sm hidden" id="errorFecha">La fecha es un dato obligatorio.</p>
+                    </div>
+                    <div class="w-1/2">
+                        <input type="time" id="hora" name="hora"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <p class="text-red-500 text-sm hidden" id="errorHora">La hora es un dato obligatorio.</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- es prioridad -->
+            <div>
+                <label class="text-lg text-gray-700">¿Es prioridad? <span class="text-red-500 ml-1">*</span></label>
+                <div class="flex items-center space-x-6 mt-2">
+                    <label for="si" class="flex items-center space-x-2">
+                        <input
+                            class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
+                            type="radio" id="si" name="es_prioridad" value="TRUE">
+                        <span class="text-gray-700">Si</span>
+                    </label>
+
+                    <label for="no" class="flex items-center space-x-2">
+                        <input
+                            class="h-6 w-6 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-full"
+                            type="radio" id="no" name="es_prioridad" value="FALSE">
+                        <span class="text-gray-700">No</span>
+                    </label>
+                </div>
+                <p class="text-red-500 text-sm hidden" id="errorEsPrioridad">Debe seleccionar si es una actividad con
+                    prioridad.</p>
+            </div>
+
+
+            <!-- Mensaje miembro -->
+            <div>
+                <label for="mensajeMiembro" class="text-lg text-gray-700">Mensaje para que el miembro recuerde invitar a
+                    sus amigos.</label>
+                <textarea id="mensajeMiembro" name="mensaje_miembro" rows="2"
+                    class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Ingrese un mensaje personalizado para animar al miembro a invitar a sus amigos"></textarea>
+            </div>
+
+
+            <!-- Mensaje prospecto -->
+            <div>
+                <label for="mensajeProspecto" class="text-lg text-gray-700">Mensaje para que el miembro lo reenvíe a sus
+                    amigos.</label>
+                <textarea id="mensajeProspecto" name="mensaje_prospecto" rows="2"
+                    class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Ingrese un mensaje personalizado para que el miembro lo reenvie a sus amigos"></textarea>
+            </div>
+
+            <!-- Botón Enviar -->
+            <div>
+                <button type="submit"
+                    class="w-full bg-green-500 text-white py-3 rounded-md text-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    Registrar Actividad
+                </button>
+            </div>
+        </form>
+
+        <p class="mt-4 text-sm text-gray-500">
+            <span class="text-red-500">*</span> Campos obligatorios
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('imagen').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const errorImagen = document.getElementById('errorImagen');
+            const previewImagen = document.getElementById('previewImagen');
+            const inputImagen = document.getElementById('imagen');
+
+            if (file) {
+                if (file.size > 1024 * 1024) {
+                    errorImagen.classList.remove('hidden');
+                    previewImagen.classList.add('hidden');
+                    previewImagen.src = '';
+                    inputImagen.value = ''; // Limpia el input
+                } else {
+                    errorImagen.classList.add('hidden');
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImagen.src = e.target.result;
+                        previewImagen.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                errorImagen.classList.add('hidden');
+                previewImagen.classList.add('hidden');
+                previewImagen.src = '';
+            }
+        });
+
+
+        document.getElementById('registroActividad').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Validar campos
+            let valid = true;
+
+            // Campaña
+            const campania = document.getElementById('campania');
+            const errorCampania = document.getElementById('errorCampania');
+            if (campania.value.trim() === '') {
+                valid = false;
+                errorCampania.classList.remove('hidden');
+            } else {
+                errorCampania.classList.add('hidden');
+            }
+
+            // Nombre
+            const nombre = document.getElementById('nombre');
+            const errorNombre = document.getElementById('errorNombre');
+            if (nombre.value.trim() === '') {
+                valid = false;
+                errorNombre.classList.remove('hidden');
+            } else {
+                errorNombre.classList.add('hidden');
+            }
+
+            // Fecha y hora
+            const fecha = document.getElementById('fecha');
+            const hora = document.getElementById('hora');
+            const errorFecha = document.getElementById('errorFecha');
+            const errorHora = document.getElementById('errorHora');
+            if (fecha.value.trim() === '') {
+                valid = false;
+                errorFecha.classList.remove('hidden');
+            } else {
+                errorFecha.classList.add('hidden');
+            }
+            if (hora.value.trim() === '') {
+                valid = false;
+                errorHora.classList.remove('hidden');
+            } else {
+                errorHora.classList.add('hidden');
+            }
+
+            // Es prioridad
+            const esPrioridad = document.querySelector('input[name="es_prioridad"]:checked');
+            const errorEsPrioridad = document.getElementById('errorEsPrioridad');
+            if (!esPrioridad) {
+                valid = false;
+                errorEsPrioridad.classList.remove('hidden');
+            } else {
+                errorEsPrioridad.classList.add('hidden');
+            }
+
+
+            // Validación adicional para la imagen
+            const imagenInput = document.getElementById('imagen');
+            const errorImagen = document.getElementById('errorImagen');
+            const imagenFile = imagenInput.files[0];
+            let imagenBase64 = null;
+            if (imagenFile && imagenFile.size > 1024 * 1024) {
+                valid = false;
+                errorImagen.classList.remove('hidden');
+            } else if (imagenFile) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagenBase64 = e.target.result;
+                };
+                reader.readAsDataURL(imagenFile);
+            }
+
+            if (valid) {
+                const formData = new FormData(event.target);
+                const filteredEntries = Array.from(formData.entries()).filter(([key, value]) => value.trim() !== '');
+                const actividad = Object.fromEntries(filteredEntries);
+
+                if (imagenBase64) {
+                    actividad.imagen = imagenBase64;
+                }
+
+                const telegram = window.Telegram.WebApp;
+                if (telegram) {
+                    telegram.sendData(JSON.stringify({
+                        webAppId: 'form_actividad_nuevo',
+                        ...actividad
+                    }));
+                    telegram.close();
+                } else {
+                    console.error("Telegram WebApp no está cargado");
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
