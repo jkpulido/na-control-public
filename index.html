@@ -182,7 +182,7 @@
             }
             if (prospecto.llamadas.length) {
                 const tbody = document.getElementById("historial-body");
-                console.log(prospecto)
+
                 prospecto.llamadas.forEach(llamada => {
                     let date = new Date(llamada.created_at).toLocaleString("es-PE", {
                         timeZone: "America/Lima",

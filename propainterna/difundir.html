@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propaganda Interna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-gray-100 py-10 px-5">
+    <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Difundir</h1>
+
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+            <table class="min-w-full table-auto">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-sm font-medium">Nombres</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium">Apellidos</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium">Grupo</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium">Asistencia</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium">Enlace</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700" id="miembros-body">
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        let fullPathImage = null;
+
+        // Obtener los parámetros de la URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        async function getMiembros(supabaseConfig) {
+            const { createClient } = supabase;
+            const supa = createClient(supabaseConfig.url, supabaseConfig.key);
+            let { data: miembros, error } = await supa
+                .from('miembros')
+                .select(`*`)
+                .eq('asistencia', 'S');
+            return miembros.filter(m => m.celular);
+        }
+
+        function createWhatsAppLink(phoneNumber, message) {
+            // Codificamos el mensaje para URL
+            const encodedMessage = encodeURIComponent(message);
+
+            // Devolvemos el enlace de WhatsApp con el número y el mensaje codificado
+            return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        }
+
+
+        async function fillMiembros() {
+            let s = getQueryParam('s');
+            s = JSON.parse(decodeURIComponent(s));
+
+            let miembros = await getMiembros(s);
+
+            miembros = miembros.sort((a, b) => (a.grupo || '').localeCompare(b.grupo || ''));
+
+            if (miembros.length) {
+                const tbody = document.getElementById("miembros-body");
+
+                miembros.forEach(miembro => {
+
+                    const fila = document.createElement("tr");
+                    fila.className = "border-b hover:bg-gray-50";
+                    let mensaje = `¡Hola ${miembro.nombres.split(' ')[0]}! 😊 Te cuento que esta semana tenemos una súper *Charla Café: Conócete, lidérate y amplía tus horizontes* , ¡y será en dos fechas!
+
+*Sede Amarilis* :
+📅 *Miércoles 8 de enero a las 8:00 p.m* .
+📍 Urb. El Limonal Mz G Lt. 5, La Colectora, Amarilis
+(Paradero colegio San Francisco de Asís, cruzar la Colectora hacia la entrada al Senati)
+
+*Sede Crespo Castillo:*
+📅 *Viernes 10 de enero a las 7:30 p.m.*
+📍 Jr. Crespo Castillo 511
+
+Será una noche súper especial para compartir ideas y reflexionar juntos ☕✨. ¡Sería genial que *invites o lleves a tus contactos* (amigos, familia, etc.)! He adjuntado un video para que se lo envíes a ellos y los animes a unirse.
+
+¿Tienes a alguien en mente para invitar? 😊 O si prefieres, ¿cuándo te vuelvo a preguntar?`;
+
+                    fila.innerHTML = `
+                            <td class="border border-gray-300 px-4 py-2 text-green-700"><a target="_blank" href="${createWhatsAppLink('51' + miembro.celular, mensaje)}">${miembro.nombres}</a></td>
+                            <td class="border border-gray-300 px-4 py-2 text-gray-700">${miembro.apellidos}</td>
+                            <td class="border border-gray-300 px-4 py-2 text-gray-700">${miembro.grupo}</td>
+                            <td class="border border-gray-300 px-4 py-2 text-gray-700">${miembro.asistencia}</td>
+                            <td class="border border-gray-300 px-4 py-2 text-gray-700">${miembro.celular}</td>
+                        `;
+
+                    tbody.appendChild(fila);
+                });
+            }
+        }
+
+        fillMiembros()
+    </script>
+</body>
+
+</html>
