@@ -7,6 +7,7 @@
     <title>Registro de Actividad</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="bg-gray-100 py-10 px-5">
@@ -43,7 +44,7 @@
             <div>
                 <label for="nombre" class="text-lg text-gray-700">Nombre <span
                         class="text-red-500 ml-1">*</span></label>
-                <input type="text" id="nombre" name="nombre" 
+                <input type="text" id="nombre" name="nombre"
                     class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <p class="text-red-500 text-sm hidden" id="errorNombre">El nombre de la actividad es un dato
                     obligatorio.</p>
@@ -146,7 +147,55 @@
     </div>
 
     <script>
-        document.getElementById('imagen').addEventListener('change', function (event) {
+        let fullPathImage = null;
+
+        // Obtener los parámetros de la URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function sanitizeFileName(fileName) {
+            return fileName
+                .normalize('NFD') // Remover tildes
+                .replace(/[\u0300-\u036f]/g, '') // Eliminar diacríticos
+                .replace(/\s+/g, '_') // Reemplazar espacios con guiones bajos
+                .replace(/[^a-zA-Z0-9._-]/g, ''); // Eliminar caracteres no válidos
+        }
+
+        // Función para subir imágenes
+        async function uploadImage(file, supabaseConfig) {
+            if (!file) {
+                console.error("No se seleccionó un archivo");
+                return;
+            }
+
+            const { createClient } = supabase;
+            const supa = createClient(supabaseConfig.url, supabaseConfig.key);
+
+            // Generar un nombre único para evitar conflictos
+            const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`;
+
+            // Subir imagen al bucket
+            const { data, error } = await supa.storage
+                .from('actividades') // Nombre del bucket
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true, // Sobrescribir si existe un archivo con el mismo nombre
+                });
+
+            if (error) {
+                console.error('Error al subir la imagen:', error.message);
+                return;
+            }
+
+            console.log('Imagen subida con éxito:', data);
+            return data.fullPath; // Ruta relativa de la imagen en el bucket
+        }
+
+        document.getElementById('imagen').addEventListener('change', async function (event) {
+            // dxxxxx
+            // mostrar spinner de subiendo al servidor
             const file = event.target.files[0];
             const errorImagen = document.getElementById('errorImagen');
             const previewImagen = document.getElementById('previewImagen');
@@ -158,14 +207,24 @@
                     previewImagen.classList.add('hidden');
                     previewImagen.src = '';
                     inputImagen.value = ''; // Limpia el input
+                    imagenBase64 = null;
                 } else {
                     errorImagen.classList.add('hidden');
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         previewImagen.src = e.target.result;
+                        imagenBase64 = e.target.result;
                         previewImagen.classList.remove('hidden');
                     };
                     reader.readAsDataURL(file);
+
+                    // subir la imagen a supabase
+                    let s = getQueryParam('s');
+                    s = JSON.parse(decodeURIComponent(s));
+                    fullPathImage = await uploadImage(file, s);
+
+                    // dxxxxxxxxxx
+                    // ocultar spinner
                 }
             } else {
                 errorImagen.classList.add('hidden');
@@ -230,22 +289,6 @@
             }
 
 
-            // Validación adicional para la imagen
-            const imagenInput = document.getElementById('imagen');
-            const errorImagen = document.getElementById('errorImagen');
-            const imagenFile = imagenInput.files[0];
-            let imagenBase64 = null;
-            if (imagenFile && imagenFile.size > 1024 * 1024) {
-                valid = false;
-                errorImagen.classList.remove('hidden');
-            } else if (imagenFile) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    imagenBase64 = e.target.result;
-                };
-                reader.readAsDataURL(imagenFile);
-            }
-
             if (valid) {
                 const formData = new FormData(event.target);
                 const filteredEntries = Array.from(formData.entries()).filter(
@@ -253,10 +296,10 @@
                 );
                 const actividad = Object.fromEntries(filteredEntries);
 
-                if (imagenBase64) {
-                    actividad.imagen = imagenBase64;
+                if (fullPathImage) {
+                    actividad.imagen = fullPathImage;
                 }
-
+                console.log(actividad)
                 const telegram = window.Telegram.WebApp;
                 if (telegram) {
                     telegram.sendData(JSON.stringify({
