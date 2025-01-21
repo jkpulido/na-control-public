@@ -13,7 +13,23 @@
 <body class="bg-gray-100 py-10 px-5">
     <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-4">Difundir</h1>
+        <div class="mb-4">
+            <label for="mensajeMiembro" class="text-lg text-gray-700">Próximas actividades</label>
+            <div>
+                <button id="proxActividad" type="button"
+                    class="px-3 py-2 text-xs font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"></button>
+            </div>
 
+        </div>
+
+        <div class="mb-4">
+            <label for="mensajeMiembro" class="text-lg text-gray-700">Mensaje a enviar</label>
+            <textarea id="mensajeMiembro" name="medio_detalle" rows="5"
+                class="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Ingrese el mensaje que desea enviarle a los miembros..."></textarea>
+            <p class="mt-1 text-sm text-gray-500">usar [nombres] como comodín para reemplazar por el nombre del miembro.
+            </p>
+        </div>
         <div class="overflow-x-auto bg-white shadow-md rounded-lg">
             <table class="min-w-full table-auto">
                 <thead class="bg-gray-800 text-white">
@@ -52,6 +68,19 @@
             return miembros.filter(m => m.celular);
         }
 
+        async function getActividadMasCercana(supabaseConfig) {
+            const { createClient } = supabase;
+            const supa = createClient(supabaseConfig.url, supabaseConfig.key);
+            const targetDate = new Date().toISOString();
+            const { data: actividad, error } = await supa
+                .from('actividades')
+                .select('*')
+                .gte('fecha', targetDate)
+                .order('fecha', { ascending: true })
+                .limit(1);
+            return actividad ? actividad[0] : null;
+        }
+
         function createWhatsAppLink(phoneNumber, message) {
             // Codificamos el mensaje para URL
             const encodedMessage = encodeURIComponent(message);
@@ -60,6 +89,27 @@
             return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
         }
 
+        async function fillActividad() {
+            let s = getQueryParam('s');
+            s = JSON.parse(decodeURIComponent(s));
+            let actividad = await getActividadMasCercana(s);
+
+            document.getElementById("proxActividad").innerHTML = actividad.fecha.split('T')[0]
+
+            document.getElementById("proxActividad").addEventListener('click', () => {
+                document.getElementById("mensajeMiembro").value = actividad.mensaje_miembro
+            });
+        }
+
+        function openWhatsapp(e, nombres, celular) {
+            e.preventDefault(); 
+            
+            let men = document.getElementById("mensajeMiembro").value;
+            let mensaje = men.replace('[nombres]', nombres);
+            let link = createWhatsAppLink('51' + celular, mensaje);
+            
+            window.open(link, '_blank')
+        }
 
         async function fillMiembros() {
             let s = getQueryParam('s');
@@ -76,23 +126,9 @@
 
                     const fila = document.createElement("tr");
                     fila.className = "border-b hover:bg-gray-50";
-                    let mensaje = `¡Hola ${miembro.nombres.split(' ')[0]}! 😊 Te cuento que esta semana tenemos una súper *Charla Café: Conócete, lidérate y amplía tus horizontes* , ¡y será en dos fechas!
-
-*Sede Amarilis* :
-📅 *Miércoles 8 de enero a las 8:00 p.m* .
-📍 Urb. El Limonal Mz G Lt. 5, La Colectora, Amarilis
-(Paradero colegio San Francisco de Asís, cruzar la Colectora hacia la entrada al Senati)
-
-*Sede Crespo Castillo:*
-📅 *Viernes 10 de enero a las 7:30 p.m.*
-📍 Jr. Crespo Castillo 511
-
-Será una noche súper especial para compartir ideas y reflexionar juntos ☕✨. ¡Sería genial que *invites o lleves a tus contactos* (amigos, familia, etc.)! He adjuntado un video para que se lo envíes a ellos y los animes a unirse.
-
-¿Tienes a alguien en mente para invitar? 😊 O si prefieres, ¿cuándo te vuelvo a preguntar?`;
 
                     fila.innerHTML = `
-                            <td class="border border-gray-300 px-4 py-2 text-green-700"><a target="_blank" href="${createWhatsAppLink('51' + miembro.celular, mensaje)}">${miembro.nombres}</a></td>
+                            <td class="border border-gray-300 px-4 py-2 text-green-700"><a onclick="openWhatsapp(event, '${miembro.nombres}', '${miembro.celular}')" href="#">${miembro.nombres}</a></td>
                             <td class="border border-gray-300 px-4 py-2 text-gray-700">${miembro.apellidos}</td>
                             <td class="border border-gray-300 px-4 py-2 text-gray-700">${miembro.grupo}</td>
                             <td class="border border-gray-300 px-4 py-2 text-gray-700">${miembro.asistencia}</td>
@@ -105,6 +141,7 @@ Será una noche súper especial para compartir ideas y reflexionar juntos ☕✨
         }
 
         fillMiembros()
+        fillActividad()
     </script>
 </body>
 
